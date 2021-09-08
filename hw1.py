@@ -29,7 +29,7 @@ def get_ngrams(n: int, test: List[str]) -> Generator[Tuple[str, Tuple[str, ...]]
         if tokens[index] not in nonRealTokens:
             context = tuple()
             count = index-n+1
-            while count <= index:
+            while count < index:
                 added_value = tokens[count]
                 added_value_tuple = (added_value,)
                 context = context + added_value_tuple
@@ -105,7 +105,7 @@ class NGramLM:
             return 1 / len(self.vocabulary)
         context_c = self.context_counts[context]
         n_gram_c = self.ngram_counts[word]
-        prob = context_c / n_gram_c
+        prob = n_gram_c / context_c
         return prob
 
     # Calculates the log probability of a sentence
