@@ -11,22 +11,22 @@ from typing import Generator
 # n is a (non-negative) int
 # text is a list of strings
 # Yields n-gram tuples of the form (string, context), where context is a tuple of strings
-def get_ngrams(n: int, text: List[str]) -> Generator[Tuple[str, Tuple[str, ...]], None, None]:
+def get_ngrams(n: int, test: List[str]) -> Generator[Tuple[str, Tuple[str, ...]], None, None]:
     addStart = ["<s>"]
     #print(addStart)
     i = n-1
     while i > 0:
-        text = addStart + text
+        test = addStart + test
         i -= 1
     #appending end token
-    text = text + ["</s>"]
-    nonRealTokens = ["<s>", "</s>"]
+    test = test + ["</s>"]
+    nonRealTokens = ["<s>"]
     #Creating tokens
-    tokens = text
-    result = []
+    tokens = test
     #Creating nGramTuple of each token
-    for index, token in enumerate(tokens):
-        if token not in nonRealTokens:
+    index = 0
+    while index < len(tokens):
+        if tokens[index] not in nonRealTokens:
             context = tuple()
             count = index-n+1
             while count <= index:
@@ -34,9 +34,9 @@ def get_ngrams(n: int, text: List[str]) -> Generator[Tuple[str, Tuple[str, ...]]
                 added_value_tuple = (added_value,)
                 context = context + added_value_tuple
                 count += 1
-            nGramTuple = (token, tuple(context))
-            result.append(nGramTuple)
-    return result
+            nGramTuple = (tokens[index], tuple(context))
+            yield nGramTuple
+        index += 1
 
 # Loads and tokenizes a corpus
 # corpus_path is a string
@@ -103,7 +103,9 @@ class NGramLM:
         #Use delta = some value for smoothing ( Q2)
         if word not in self.ngram_counts.keys() or context not in self.context_counts.keys():
             return 1 / len(self.vocabulary)
-        prob = self.context_counts[context] / self.ngram_counts[word]
+        context_c = self.context_counts[context]
+        n_gram_c = self.ngram_counts[word]
+        prob = context_c / n_gram_c
         return prob
 
     # Calculates the log probability of a sentence
