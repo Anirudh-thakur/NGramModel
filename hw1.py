@@ -101,13 +101,15 @@ class NGramLM:
     # Returns a float
     def get_ngram_prob(self, word: str, context: Tuple[str, ...], delta=.0) -> float:
         #Use delta = some value for smoothing ( Q2)
-        try:
+        if (word,context) in self.ngram_counts.keys():
             count_of_token = self.ngram_counts[(word,context)]
-            count_of_context = float(len(self.context_counts[context]))
-            result = count_of_token / count_of_context
-
-        except KeyError:
-            result = 1/len(self.vocabulary)
+        else:
+            count_of_token = 0.0
+        if context in self.context_counts.keys():
+            count_of_context = len(self.context_counts[context])
+        else:
+            return 1/len(self.vocabulary)
+        result = count_of_token / count_of_context
         return result
 
     # Calculates the log probability of a sentence
@@ -120,8 +122,10 @@ class NGramLM:
         for n_gram in n_grams_sent:
             word = n_gram[0]
             context = n_gram[1]
-            current_ngram_prob = math.log(
-                self.get_ngram_prob(word, context,delta), 2)
+            prob = self.get_ngram_prob(word, context, delta)
+            if prob == 0:
+                continue;
+            current_ngram_prob = math.log(prob, 2)
             prob = prob + current_ngram_prob
         return prob
         
