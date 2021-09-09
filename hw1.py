@@ -90,9 +90,9 @@ class NGramLM:
             else:
                 self.ngram_counts[nGramTuple] += 1
             if context not in self.context_counts.keys():
-                self.context_counts[context] = 1
+                self.context_counts[context] = [token]
             else:
-                self.context_counts[context] += 1
+                self.context_counts[context].append(token)
 
     # Calculates the MLE probability of an n-gram
     # word is a string
@@ -101,12 +101,14 @@ class NGramLM:
     # Returns a float
     def get_ngram_prob(self, word: str, context: Tuple[str, ...], delta=.0) -> float:
         #Use delta = some value for smoothing ( Q2)
-        if word not in self.ngram_counts.keys() or context not in self.context_counts.keys():
-            return 1 / len(self.vocabulary)
-        context_c = self.context_counts[context]
-        n_gram_c = self.ngram_counts[word]
-        prob = n_gram_c / context_c
-        return prob
+        try:
+            count_of_token = self.ngram_counts[(word,context)]
+            count_of_context = float(len(self.context_counts[context]))
+            result = count_of_token / count_of_context
+
+        except KeyError:
+            result = 1/len(self.vocabulary)
+        return result
 
     # Calculates the log probability of a sentence
     # sent is a list of strings
@@ -119,9 +121,10 @@ class NGramLM:
             word = n_gram[0]
             context = n_gram[1]
             current_ngram_prob = math.log(
-                self.get_ngram_prob(n_gram, context), 2)
+                self.get_ngram_prob(word, context,delta), 2)
             prob = prob + current_ngram_prob
         return prob
+        
 
     # Calculates the perplexity of a language model on a test corpus
     # corpus is a list of lists of strings
@@ -134,14 +137,38 @@ class NGramLM:
     # delta is an float
     # Returns a string
     def generate_random_word(self, context: Tuple[str, ...], delta=.0) -> str:
-        pass
+        r = random.random()
+        probs = {}
+        tokens = self.context_counts[context]
+        for token in tokens:
+            probs[token] = self.get_ngram_prob(context, token)
+
+        sum_p = 0
+        for token in sorted(probs):
+            sum_p += probs[token]
+            if sum_p > r:
+                return token
 
     # Generates a random sentence
     # max_length is an int
     # delta is a float
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
-        pass
+        n = self.n
+        context_queue = (n - 1) * ['<s>']
+        result = []
+        for _ in range(max_length):
+            obj = self.random_token(tuple(context_queue))
+            result.append(obj)
+            if n > 1:
+                context_queue.pop(0)
+                if context_queue == '</s>':
+                    break
+                if obj == '.':
+                    context_queue = (n - 1) * ['<s>']
+                else:
+                    context_queue.append(obj)
+        return ' '.join(result)
 
 
 def main(corpus_path: str, delta: float, seed: int):
