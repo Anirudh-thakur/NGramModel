@@ -141,7 +141,14 @@ class NGramLM:
     # corpus is a list of lists of strings
     # Returns a float
     def get_perplexity(self, corpus: List[List[str]]) -> float:
-        pass
+        sum_log = 0
+        token_set = set()
+        for sent in corpus:
+            sum_log = sum_log + self.get_sent_log_prob(sent)
+            for word in sent:
+                token_set.add(word)
+        avg_log_prob = sum_log / len(token_set)
+        return math.pow(2,-avg_log_prob)
 
     # Samples a word from the probability distribution for a given context
     # context is a tuple of strings
@@ -150,8 +157,9 @@ class NGramLM:
     def generate_random_word(self, context: Tuple[str, ...], delta=.0) -> str:
         r = random.random()
         probs = {}
-        self.vocabulary.sort()
-        for token in self.vocabulary:
+        tokens = list(self.vocabulary)
+        tokens.sort()
+        for token in tokens:
             probs[token] = self.get_ngram_prob(token,context,delta)
 
         sum_a = 0
@@ -167,21 +175,20 @@ class NGramLM:
     # delta is a float
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
-        n = self.n
-        context_queue = (n - 1) * ['<s>']
-        result = []
-        for _ in range(max_length):
-            obj = self.random_token(tuple(context_queue))
-            result.append(obj)
-            if n > 1:
-                context_queue.pop(0)
-                if context_queue == '</s>':
-                    break
-                if obj == '.':
-                    context_queue = (n - 1) * ['<s>']
-                else:
-                    context_queue.append(obj)
-        return ' '.join(result)
+        context = tuple()
+        context =  context + (  "<s> " ,)
+        recent_token = "<s>"
+        while max_length >= 0 :
+            recent_token = self.generate_random_word(context,delta)
+            if recent_token == "</s>":
+                break
+            recent_token = recent_token + " "
+            context = context+(recent_token,)
+            
+            max_length -= 1
+        return "".join(list(context))
+
+
 
 
 def main(corpus_path: str, delta: float, seed: int):
@@ -191,6 +198,7 @@ def main(corpus_path: str, delta: float, seed: int):
 
     print(trigram_lm.get_sent_log_prob(word_tokenize(s1)))
     print(trigram_lm.get_sent_log_prob(word_tokenize(s2)))
+    print(trigram_lm.generate_random_text(7))
 
 
 if __name__ == '__main__':
