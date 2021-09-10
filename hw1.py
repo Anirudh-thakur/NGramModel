@@ -142,12 +142,9 @@ class NGramLM:
     # Returns a float
     def get_perplexity(self, corpus: List[List[str]]) -> float:
         sum_log = 0
-        token_set = set()
         for sent in corpus:
             sum_log = sum_log + self.get_sent_log_prob(sent)
-            for word in sent:
-                token_set.add(word)
-        avg_log_prob = sum_log / len(token_set)
+        avg_log_prob = sum_log / len(self.vocabulary)
         return math.pow(2,-avg_log_prob)
 
     # Samples a word from the probability distribution for a given context
