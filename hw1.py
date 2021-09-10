@@ -131,7 +131,7 @@ class NGramLM:
             context = n_gram[1]
             prob = self.get_ngram_prob(word, context, delta)
             if prob == 0:
-                continue;
+                return -float('inf')
             current_ngram_prob = math.log(prob, 2)
             prob = prob + current_ngram_prob
         return prob
