@@ -150,15 +150,17 @@ class NGramLM:
     def generate_random_word(self, context: Tuple[str, ...], delta=.0) -> str:
         r = random.random()
         probs = {}
-        tokens = self.context_counts[context]
-        for token in tokens:
-            probs[token] = self.get_ngram_prob(context, token)
+        self.vocabulary.sort()
+        for token in self.vocabulary:
+            probs[token] = self.get_ngram_prob(token,context,delta)
 
+        sum_a = 0
         sum_p = 0
         for token in sorted(probs):
-            sum_p += probs[token]
-            if sum_p > r:
+            sum_a += probs[token]
+            if sum_a  > r and sum_p < r:
                 return token
+            sum_p = sum_a
 
     # Generates a random sentence
     # max_length is an int
