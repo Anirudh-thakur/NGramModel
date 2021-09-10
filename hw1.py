@@ -125,16 +125,14 @@ class NGramLM:
     # Returns a float
     def get_sent_log_prob(self, sent: List[str], delta=.0) -> float:
         n_grams_sent = get_ngrams(self.n, sent)
-        prob = 0
+        log_prob = 0
         for n_gram in n_grams_sent:
             word = n_gram[0]
             context = n_gram[1]
             n_gram_prob = self.get_ngram_prob(word, context, delta)
-            if prob == 0:
-                return -float('inf')
-            current_ngram_prob = math.log(prob, 2)
-            prob = prob + current_ngram_prob
-        return prob
+            current_ngram_prob = math.log(n_gram_prob, 2)
+            log_prob = log_prob + current_ngram_prob
+        return log_prob
         
 
     # Calculates the perplexity of a language model on a test corpus
