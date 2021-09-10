@@ -74,6 +74,7 @@ class NGramLM:
         self.n = n
         self.ngram_counts = {}
         self.context_counts = {}
+        self.context_label = {}
         self.vocabulary = set()
 
     # Updates internal counts based on the n-grams in text
@@ -89,10 +90,15 @@ class NGramLM:
                 self.ngram_counts[nGramTuple] = 1
             else:
                 self.ngram_counts[nGramTuple] += 1
-            if context not in self.context_counts.keys():
-                self.context_counts[context] = [token]
+            if context not in self.context_label.keys():
+                self.context_label[context] = [token]
             else:
-                self.context_counts[context].append(token)
+                self.context_label[context].append(token)
+            if context not in self.context_counts.keys():
+                    self.context_counts[context] = 1
+            else:
+                self.context_counts[context] += 1
+
 
     # Calculates the MLE probability of an n-gram
     # word is a string
@@ -106,7 +112,7 @@ class NGramLM:
         else:
             count_of_token = 0.0
         if context in self.context_counts.keys():
-            count_of_context = len(self.context_counts[context])
+            count_of_context = len(self.context_label[context])
         else:
             return 1/len(self.vocabulary)
         result = count_of_token / count_of_context
