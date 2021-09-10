@@ -177,18 +177,16 @@ class NGramLM:
     def generate_random_text(self, max_length: int, delta=.0) -> str:
         context = tuple()
         first_word = self.generate_random_word(("<s>",), delta)
-        first_word = first_word+" "
         context = context + (first_word,)
         recent_token = first_word
         while max_length > 1 :
             recent_token = self.generate_random_word(context,delta)
             if recent_token == "</s>":
                 break
-            recent_token = recent_token + " "
             context = context+(recent_token,)
             
             max_length -= 1
-        return "".join(list(context))
+        return ' '.join(list(context))
 
 
 
@@ -200,7 +198,7 @@ def main(corpus_path: str, delta: float, seed: int):
 
     print(trigram_lm.get_sent_log_prob(word_tokenize(s1)))
     print(trigram_lm.get_sent_log_prob(word_tokenize(s2)))
-    print(trigram_lm.generate_random_text(7))
+    print(trigram_lm.generate_random_text(8))
 
 
 if __name__ == '__main__':
