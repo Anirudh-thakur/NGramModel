@@ -130,6 +130,8 @@ class NGramLM:
             word = n_gram[0]
             context = n_gram[1]
             n_gram_prob = self.get_ngram_prob(word, context, delta)
+            if n_gram_prob == 0:
+                return -float('inf')
             current_ngram_prob = math.log(n_gram_prob, 2)
             log_prob = log_prob + current_ngram_prob
         return log_prob
