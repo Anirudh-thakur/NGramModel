@@ -115,7 +115,8 @@ class NGramLM:
             count_of_context = len(self.context_label[context])
         else:
             return 1/len(self.vocabulary)
-        result = count_of_token / count_of_context
+        result = (count_of_token + delta) / (count_of_context + delta*len(self.vocabulary))
+         
         return result
 
     # Calculates the log probability of a sentence
