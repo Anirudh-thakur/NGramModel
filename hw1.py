@@ -172,16 +172,21 @@ class NGramLM:
     # delta is a float
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
-        context = ("<s>",)
-        recent_token = "<s>"
-        while max_length > 1 :
-            recent_token = self.generate_random_word(context,delta)
+        context = []
+        n = self.n
+        for _ in range(n):
+            context = context + ["<s>"]
+        while max_length >= 1 :
+            recent_token = self.generate_random_word(tuple(context),delta)
+            if n > 0:
+                context.pop(0)
+            
             if recent_token == "</s>":
                 break
-            context = context+(recent_token,)
-            
+            context = context+[recent_token]
+            n -= 1
             max_length -= 1
-        return ' '.join(list(context))
+        return ' '.join(context)
 
 
 
