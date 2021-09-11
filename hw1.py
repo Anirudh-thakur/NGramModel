@@ -173,7 +173,7 @@ class NGramLM:
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
         n = self.n
-        context_queue = (n - 1) * ['<s>']
+        context_queue = (n) * ['<s>']
         result = []
         for _ in range(max_length):
             word = self.generate_random_word(tuple(context_queue),delta)
@@ -183,7 +183,7 @@ class NGramLM:
             if n > 1:
                 context_queue.pop(0)
                 if word == '.':
-                    context_queue = (n - 1) * ['<s>']
+                    context_queue = (n) * ['<s>']
                 else:
                     context_queue.append(word)
         return ' '.join(result)
