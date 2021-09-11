@@ -184,7 +184,7 @@ class NGramLM:
             context = context+[recent_token]
             n -= 1
             max_length -= 1
-        while context[0] == "<s>":
+        while len(context) != 0 and context[0] == "<s>":
             context.pop(0)
         
         return ' '.join(context)
