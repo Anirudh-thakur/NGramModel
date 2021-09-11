@@ -172,20 +172,21 @@ class NGramLM:
     # delta is a float
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
-        context = []
         n = self.n
-        for _ in range(n):
-            context = context + ["<s>"]
-        while max_length >= 1 :
-            recent_token = self.generate_random_word(tuple(context),delta)
-            
-            if recent_token == "</s>":
+        context_queue = (n - 1) * ['<s>']
+        result = []
+        for _ in range(max_length):
+            obj = self.generate_random_word(tuple(context_queue),delta)
+            if obj == "</s>":
                 break
-            context = context+[recent_token]
-            n -= 1
-            max_length -= 1
-        #while len(context) != 0 and context[0] == "<s>":
-        #    context.pop(0)
+            result.append(obj)
+            if n > 1:
+                context_queue.pop(0)
+                if obj == '.':
+                    context_queue = (n - 1) * ['<s>']
+                else:
+                    context_queue.append(obj)
+        return ' '.join(result)
         
         return ' '.join(context)
 
@@ -199,7 +200,7 @@ def main(corpus_path: str, delta: float, seed: int):
 
     print(trigram_lm.get_sent_log_prob(word_tokenize(s1)))
     print(trigram_lm.get_sent_log_prob(word_tokenize(s2)))
-    print(trigram_lm.generate_random_text(0))
+    print(trigram_lm.generate_random_text(8))
 
 
 if __name__ == '__main__':
