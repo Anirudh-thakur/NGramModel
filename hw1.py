@@ -174,7 +174,7 @@ class NGramLM:
     def generate_random_text(self, max_length: int, delta=.0) -> str:
         context = ("<s>",)
         recent_token = "<s>"
-        while max_length > 0 :
+        while max_length > 1 :
             recent_token = self.generate_random_word(context,delta)
             if recent_token == "</s>":
                 break
