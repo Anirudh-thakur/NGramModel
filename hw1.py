@@ -176,16 +176,16 @@ class NGramLM:
         context_queue = (n - 1) * ['<s>']
         result = []
         for _ in range(max_length):
-            obj = self.generate_random_word(tuple(context_queue),delta)
-            if obj == "</s>":
+            word = self.generate_random_word(tuple(context_queue),delta)
+            if word == "</s>":
                 break
-            result.append(obj)
+            result.append(word)
             if n > 1:
                 context_queue.pop(0)
-                if obj == '.':
+                if word == '.':
                     context_queue = (n - 1) * ['<s>']
                 else:
-                    context_queue.append(obj)
+                    context_queue.append(word)
         return ' '.join(result)
         
         return ' '.join(context)
