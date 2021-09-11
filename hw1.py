@@ -178,14 +178,15 @@ class NGramLM:
             context = context + ["<s>"]
         while max_length >= 1 :
             recent_token = self.generate_random_word(tuple(context),delta)
-            if n > 0:
-                context.pop(0)
             
             if recent_token == "</s>":
                 break
             context = context+[recent_token]
             n -= 1
             max_length -= 1
+        while context[0] == "<s>":
+            context.pop(0)
+        
         return ' '.join(context)
 
 
