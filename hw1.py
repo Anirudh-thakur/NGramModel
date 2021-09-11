@@ -184,8 +184,8 @@ class NGramLM:
             context = context+[recent_token]
             n -= 1
             max_length -= 1
-        while len(context) != 0 and context[0] == "<s>":
-            context.pop(0)
+        #while len(context) != 0 and context[0] == "<s>":
+        #    context.pop(0)
         
         return ' '.join(context)
 
@@ -199,7 +199,7 @@ def main(corpus_path: str, delta: float, seed: int):
 
     print(trigram_lm.get_sent_log_prob(word_tokenize(s1)))
     print(trigram_lm.get_sent_log_prob(word_tokenize(s2)))
-    print(trigram_lm.generate_random_text(8))
+    print(trigram_lm.generate_random_text(0))
 
 
 if __name__ == '__main__':
