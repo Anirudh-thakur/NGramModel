@@ -172,23 +172,17 @@ class NGramLM:
     # delta is a float
     # Returns a string
     def generate_random_text(self, max_length: int, delta=.0) -> str:
-        n = self.n
+        n = self.n-1
         context_queue = (n) * ['<s>']
         result = []
         for _ in range(max_length):
             word = self.generate_random_word(tuple(context_queue),delta)
+            result.append(word)
+            context_queue.append(word)
             if word == "</s>":
                 break
-            result.append(word)
-            if n > 1:
-                context_queue.pop(0)
-                if word == '.':
-                    context_queue = (n) * ['<s>']
-                else:
-                    context_queue.append(word)
         return ' '.join(result)
         
-        return ' '.join(context)
 
 
 
