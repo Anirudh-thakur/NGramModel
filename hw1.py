@@ -177,10 +177,10 @@ class NGramLM:
         result = []
         for _ in range(max_length):
             word = self.generate_random_word(tuple(context_queue),delta)
+            if word == "</s>":
+                    break
             result.append(word)
             context_queue.append(word)
-            if word == "</s>":
-                break
         return ' '.join(result)
         
 
